@@ -1,26 +1,28 @@
-use anyhow::{Ok, Result};
-use headless_chrome::{Browser, LaunchOptionsBuilder, Tab};
-use std::{sync::Arc, thread::sleep, time::Duration};
+use anyhow::Result;
+use headless_chrome::{Browser, LaunchOptionsBuilder, Tab, protocol::cdp::Network::Cookie};
+use std::{sync::Arc, time::Duration};
 
-const LOGIN_URL: &str = "https://example.com";
+const LOGIN_URL: &str = "https://id.classi.jp/login/identifier";
 
-pub fn login_classi() -> Result<()> {
+pub fn login_classi() -> Result<Vec<Cookie>> {
     //browserの立ち上げ
     let mut launch_option: LaunchOptionsBuilder = LaunchOptionsBuilder::default();
     launch_option.headless(false);
     let browser: Browser = Browser::new(launch_option.build()?)?;
 
-    //tabを生成
+    //tabの生成とtimeoutの設定
     let tab: Arc<Tab> = browser.new_tab()?;
+    tab.set_default_timeout(Duration::from_secs(86400));
 
     //classiのログインページに移動
     tab.navigate_to(LOGIN_URL)?.wait_until_navigated()?;
 
-    let title = tab.get_title()?;
+    //classiのホームへの遷移待機
+    tab.wait_for_element("a.logo")?;
 
-    sleep(Duration::from_secs(60));
+    tab.get_cookies()
+}
 
-    println!("{}", title);
-
-    Ok(())
+pub fn write_cookie(cookies: Vec<Cookie>) {
+    cookies;
 }
