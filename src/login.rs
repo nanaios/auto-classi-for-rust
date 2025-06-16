@@ -17,6 +17,8 @@ pub fn login_classi() -> Result<Vec<Cookie>> {
     //classiのログインページに移動
     tab.navigate_to(LOGIN_URL)?.wait_until_navigated()?;
 
+    println!("classi loading!");
+
     //classiのホームへの遷移待機
     tab.wait_for_element("a.logo")?;
 
@@ -24,5 +26,7 @@ pub fn login_classi() -> Result<Vec<Cookie>> {
 }
 
 pub fn write_cookie(cookies: Vec<Cookie>) {
-    cookies;
+    for cookie in cookies {
+        println!("{}", cookie.value);
+    }
 }
